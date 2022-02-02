@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Firefox LoadType translator</title>
+</head>
+<body>
+<input type="number" id="loadtype" oninput="translate(this);" />
+<pre id="translation">
+  Put the numerical load type in to get the translation.
+</pre>
+</body>
+
+<script>
+let NSI_DOCSHELL_LOAD_COMMANDS = {
+  LOAD_CMD_NORMAL: 1,
+  LOAD_CMD_RELOAD: 2,
+  LOAD_CMD_HISTORY: 4,
+  LOAD_CMD_PUSHSTATE: 8,
+}
+
+let NSI_WEBNAVIGATION_LOAD_FLAGS = {
+  LOAD_FLAGS_NONE: 0x0000,
+  LOAD_FLAGS_IS_REFRESH: 0x0010,
+  LOAD_FLAGS_IS_LINK: 0x0020,
+  LOAD_FLAGS_BYPASS_HISTORY: 0x0040,
+  LOAD_FLAGS_REPLACE_HISTORY: 0x0080,
+  LOAD_FLAGS_BYPASS_CACHE: 0x0100,
+  LOAD_FLAGS_BYPASS_PROXY: 0x0200,
+  LOAD_FLAGS_CHARSET_CHANGE: 0x0400,
+  LOAD_FLAGS_STOP_CONTENT: 0x0800,
+  LOAD_FLAGS_FROM_EXTERNAL: 0x1000,
+  LOAD_FLAGS_FIRST_LOAD: 0x4000,
+  LOAD_FLAGS_ALLOW_POPUPS: 0x8000,
+  LOAD_FLAGS_BYPASS_CLASSIFIER: 0x10000,
+  LOAD_FLAGS_FORCE_ALLOW_COOKIES: 0x20000,
+  LOAD_FLAGS_DISALLOW_INHERIT_PRINCIPAL: 0x40000,
+  LOAD_FLAGS_ERROR_LOAD_CHANGES_RV: 0x80000,
+  LOAD_FLAGS_ALLOW_THIRD_PARTY_FIXUP: 0x100000,
+  LOAD_FLAGS_FIXUP_SCHEME_TYPOS: 0x200000,
+  LOAD_FLAGS_FORCE_ALLOW_DATA_URI: 0x400000,
+  LOAD_FLAGS_IS_REDIRECT: 0x800000,
+  LOAD_FLAGS_DISABLE_TRR: 0x1000000,
+  LOAD_FLAGS_FORCE_TRR: 0x2000000,
+  LOAD_FLAGS_BYPASS_LOAD_URI_DELEGATE: 0x4000000,
+  LOAD_FLAGS_USER_ACTIVATION: 0x8000000,
+}
+
+function translate(input) {
+  let value = input.value;
+  let commands = [];
+  for (let command in NSI_DOCSHELL_LOAD_COMMANDS) {
+    if (NSI_DOCSHELL_LOAD_COMMANDS[command] & value) {
+      commands.push(command);
+    }
+  }
+
+  let flags = [];
+  for (let flag in NSI_WEBNAVIGATION_LOAD_FLAGS) {
+    if (NSI_WEBNAVIGATION_LOAD_FLAGS[flag] << 16 & value) {
+      flags.push(flag);
+    }
+  }
+  
+  let translation = document.getElementById("translation");
+  translation.textContent = `Commands: ${commands.join(", ")}\nFlags: ${flags.join(", ")}`;
+}
+</script>
+
+</html>
